@@ -1,0 +1,16 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: printdenv
+spec:
+  parallelism: 1
+  completions: 1
+  template:
+    metadata:
+      name: printmessage
+    spec:
+      containers:
+      - name: printmessage
+        image: busybox
+        command: ["sh", "-cx", "cat /etc/labels /etc/annotations;env"]
+      restartPolicy: Never 

@@ -1,0 +1,19 @@
+echo "Setting up project and apps"
+
+oc new-project tok-deployment-02
+oc new-app --name='cotd1' -l name='cotd1' php~https://github.com/wkulhanek/cotd.git -e SELECTOR=cats
+oc new-app --name='cotd2' -l name='cotd2' php~https://github.com/wkulhanek/cotd.git -e SELECTOR=cities
+
+echo "Setting up service and load balancing"
+
+oc expose service cotd1 --name='abcotd' -l name='cotd'
+oc set route-backends abcotd cotd1=50 cotd2=50
+
+oc annotate route/abcotd haproxy.router.openshift.io/balance=roundrobin
+
+
+oc get service
+
+#oc expose service --name=cotd1 -l name="cotd1"
+#oc expose service cotd1 --name=cotd1 -l name="cotd1"
+#oc set route-backends cotd1 cotd1=50 cotd3=50
